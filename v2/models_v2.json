@@ -1,0 +1,17 @@
+[
+  { "publisher": "anthropic",  "model": "claude-opus-4-6",                  "tier": "large"  },
+  { "publisher": "anthropic",  "model": "claude-sonnet-4-5",                "tier": "large"  },
+  { "publisher": "openai",     "model": "gpt-5.4",                          "tier": "large"  },
+  { "publisher": "x-ai",       "model": "grok-4.1-fast",                    "tier": "large"  },
+  { "publisher": "x-ai",       "model": "grok-4-fast",                      "tier": "large"  },
+  { "publisher": "google",     "model": "gemini-2.5-flash",                 "tier": "large"  },
+  { "publisher": "deepseek",   "model": "deepseek-chat-v3-0324",            "tier": "medium" },
+  { "publisher": "meta-llama", "model": "llama-3.3-70b-instruct",           "tier": "medium" },
+  { "publisher": "google",     "model": "gemma-3-27b-it",                   "tier": "medium" },
+  { "publisher": "mistralai",  "model": "mistral-small-3.2-24b-instruct",   "tier": "medium" },
+  { "publisher": "anthropic",  "model": "claude-haiku-4-5",                 "tier": "small"  },
+  { "publisher": "openai",     "model": "gpt-4o-mini",                      "tier": "small"  },
+  { "publisher": "google",     "model": "gemma-3-12b-it",                   "tier": "small"  },
+  { "publisher": "microsoft",  "model": "phi-4",                            "tier": "small"  },
+  { "publisher": "liquid",     "model": "lfm2-8b-a1b",                      "tier": "small"  }
+]
