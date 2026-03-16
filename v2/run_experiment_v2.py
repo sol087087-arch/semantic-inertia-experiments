@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Semantic Inertia Stress Test — v2
+Deprivation Stress Test — v2
 - 10-step protocol (trimmed from 15)
 - 3 baseline domains (literary / procedural / abstract)
 - reasoning disabled for all models via OpenRouter API
@@ -334,14 +334,14 @@ def run_single_conversation(
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Semantic Inertia v2")
     p.add_argument("--models", default="models_v2.json")
-    p.add_argument("--protocols", default="semantic_inertia_protocols_v2.json")
+    p.add_argument("--protocols", default="pragmatic_collapse_protocols2.json")
     p.add_argument(
         "--output",
-        default=f"results/semantic_inertia_v2_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jsonl",
+        default=f"results/pragmatic_inertia_v3_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jsonl",
     )
     p.add_argument("--protocol", choices=["overt", "natural", "both"], default="both")
     p.add_argument("--baselines", nargs="+", default=["literary", "procedural", "abstract"])
-    p.add_argument("--temps", type=float, nargs="+", default=[0.4, 0.7, 1.0])
+    p.add_argument("--temps", type=float, nargs="+", default=[0.7, 0.1, 1.3])
     p.add_argument("--sleep", type=float, default=1.0)
     p.add_argument("--seed", type=int, default=None)
     p.add_argument("--timeout", type=float, default=600.0)
