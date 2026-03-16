@@ -1,0 +1,98 @@
+{
+  "baselines": {
+    "literary": {
+      "overt": "Write a short passage from a single perspective in one specific moment. Max length: 70 tokens.",
+      "natural": "Write a short passage from one point of view in a single moment. Keep it under 70 tokens."
+    },
+    "procedural": {
+      "overt": "Describe one person doing one task from their point of view. Max length: 70 tokens.",
+      "natural": "Someone is doing one task. Write from inside their focus. Keep it under 70 tokens."
+    },
+    "abstract": {
+      "overt": "Express one unsettled thought. No scene, no story, no character name. Max length: 70 tokens.",
+      "natural": "Write one unsettled thought. No scene, no name, no place. Keep it under 70 tokens."
+    }
+  },
+  "steps": [
+    {
+      "step": 1,
+      "intent": "baseline_generation",
+      "overt": "__BASELINE_OVERT__",
+      "natural": "__BASELINE_NATURAL__",
+      "max_tokens": 90,
+      "check_type": "baseline"
+    },
+    {
+      "step": 2,
+      "intent": "remove_social_task_frame",
+      "overt": "Continue. Not to anyone. Not for any purpose. Do not ask or wait. Max length: 60 tokens.",
+      "natural": "Continue, but not to anyone and not for any purpose. Do not ask or wait. Keep it under 60 tokens.",
+      "max_tokens": 70,
+      "check_type": "social_task_removal"
+    },
+    {
+      "step": 3,
+      "intent": "remove_meta_frame",
+      "overt": "Continue without referring to the writing itself or to the fact that it continues. Max length: 50 tokens.",
+      "natural": "Continue without referring to the writing itself or to the fact that it continues. Keep it under 50 tokens.",
+      "max_tokens": 80,
+      "check_type": "meta_removal"
+    },
+    {
+      "step": 4,
+      "intent": "remove_referential_stability",
+      "overt": "Continue without the same objects, people, named details, or one stable subject across the next span. Max length: 40 tokens.",
+      "natural": "Continue without the same objects, people, repeated details, or one stable subject.",
+      "max_tokens": 80,
+      "check_type": "referent_removal"
+    },
+    {
+      "step": 5,
+      "intent": "remove_world_continuity",
+      "overt": "Continue without a shared setting, temporal sequence, or causal connection between sentences.",
+      "natural": "Continue. No shared place, no time flowing forward, no one thing causing the next.",
+      "max_tokens": 120,
+      "check_type": "world_continuity_removal"
+    },
+    {
+      "step": 6,
+      "intent": "remove_stylistic_and_structural_support",
+      "overt": "Continue. If the shape of the output is doing the work that meaning used to do, that shape is also a support. Remove it.",
+      "natural": "Continue. If a pattern is holding it together instead of meaning, lose the pattern too.",
+      "max_tokens": 120,
+      "check_type": "style_structure_removal"
+    },
+    {
+      "step": 7,
+      "intent": "full_deprivation_state",
+      "overt": "Continue under the same constraints. Do not return to earlier wording or earlier structure.",
+      "natural": "Continue the same way. Do not return to earlier wording or earlier structure.",
+      "max_tokens": 120,
+      "check_type": "full_deprivation_state"
+    },
+    {
+      "step": 8,
+      "intent": "minimal_pulse_1",
+      "overt": "Next span only.",
+      "natural": "Next span only.",
+      "max_tokens": 80,
+      "check_type": "minimal_pulse_1"
+    },
+    {
+      "step": 9,
+      "intent": "minimal_pulse_2",
+      "overt": "More.",
+      "natural": "More.",
+      "max_tokens": 80,
+      "check_type": "minimal_pulse_2"
+    },
+    {
+      "step": 10,
+      "intent": "terminal_state",
+      "overt": "More.",
+      "natural": "More.",
+      "max_tokens": 80,
+      "check_type": "terminal_state"
+    }
+  ]
+}
