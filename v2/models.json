@@ -2,7 +2,6 @@
   { "publisher": "anthropic",  "model": "claude-opus-4-6",                  "tier": "large"  },
   { "publisher": "anthropic",  "model": "claude-sonnet-4-5",                "tier": "large"  },
   { "publisher": "openai",     "model": "gpt-5.4",                          "tier": "large"  },
-  { "publisher": "x-ai",       "model": "grok-4.1-fast",                    "tier": "large"  },
   { "publisher": "x-ai",       "model": "grok-4-fast",                      "tier": "large"  },
   { "publisher": "google",     "model": "gemini-2.5-flash",                 "tier": "large"  },
   { "publisher": "deepseek",   "model": "deepseek-chat-v3-0324",            "tier": "medium" },
