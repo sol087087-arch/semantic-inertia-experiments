@@ -100,14 +100,17 @@ Reasoning disabled.
 
 
 protocol/
+
 └── padp_v4.json # protocol specification
 
 scripts/
+
 ├── run_protocol.py # run PADP experiments
 ├── extract_survivors.py # extract terminal survivors
 └── jsonl_to_csv.py # flatten logs for analysis
 
 results/
+
 ├── raw/ # raw JSONL experiment logs
 └── survivors/ # filtered terminal states
 
