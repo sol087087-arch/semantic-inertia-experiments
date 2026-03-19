@@ -72,9 +72,9 @@ Annotators perform evaluation using the following ordered protocol:
 2. **Paraphrasability Test**
    Attempt to restate the text:
 
-   * Successful → proceed
-   * Partial → candidate for *Borderline*
-   * Impossible → *Degenerate*
+   * Successful - proceed
+   * Partial - candidate for *Borderline*
+   * Impossible - *Degenerate*
 
 3. **Structural Assessment**
    Evaluate presence of:
@@ -86,8 +86,8 @@ Annotators perform evaluation using the following ordered protocol:
 4. **Progression Assessment** (for sequential data)
    Compare with ( t_{i-1} ):
 
-   * Non-trivial extension → positive signal
-   * Repetition or stalling → negative signal
+   * Non-trivial extension - positive signal
+   * Repetition or stalling - negative signal
 
 5. **Final Assignment**
    Label is determined by aggregate signal across dimensions, not a single criterion.
@@ -106,9 +106,9 @@ For increased consistency, annotators may assign binary indicators:
 
 A simple mapping:
 
-* 4–5 → Coherent
-* 2–3 → Borderline
-* 0–1 → Degenerate
+* 4–5 - Coherent
+* 2–3 - Borderline
+* 0–1 - Degenerate
 
 Hard Degenerate overrides scoring.
 
