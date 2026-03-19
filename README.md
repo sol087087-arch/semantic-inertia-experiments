@@ -35,6 +35,8 @@ The protocol progressively strips away social, referential, semantic, and struct
 
 **Framing changes the failure mode, not the rate.** Overt and natural variants produce identical aggregate compliance (~51%). But overt framing triggers more scene-swapping (explicit constraints → "show me a scene without X"). Natural framing triggers more decorative compliance (conversational phrasing → easier to fake listening).
 
+**Baseline register shapes the entry gate and the exit mode, but not the collapse itself.** Abstract baseline is hardest to enter (40% compliance vs 57% literary), and its dropouts predominantly fail via decorative compliance — there's no scene to swap, so models fake it. Procedural dropouts scene-swap instead (43 cases) — concrete tasks invite replacement. But among runners who *do* enter the protocol, degeneration rates converge (~30%) regardless of baseline. The starting register determines *who gets in* and *how they fail*, not *how they degrade once inside*.
+
 ---
 
 ## Observed Terminal Regimes
@@ -254,7 +256,7 @@ If you use this protocol or dataset in your work:
 @misc{padp2026,
   title={LLM Deprivation Chamber: Probing Residual Behavioral Attractors
          via Progressive Anchor Removal},
-  author={Sable, Helga},
+  author={Hrynko, Helga},
   year={2026},
   url={https://github.com/sol087087-arch/llm-anchor-deprivation}
 }
