@@ -130,3 +130,11 @@ Inter-annotator agreement should be measured (e.g., Cohen’s κ or Krippendorff
 Surface-level fluency is not sufficient for coherence.
 Coherence requires interpretable semantic structure and measurable progression across adjacent units.
 
+---
+
+### 8. Borderline Resolution Heuristic
+
+
+In ambiguous cases, annotators apply an additional interpretability criterion:
+A text is classified as *coherent* if its semantic structure can be reasonably reconstructed by an uninformed reader without requiring external context or interpretive effort beyond standard language comprehension.
+Texts that rely solely on stylistic cues (e.g., abstraction, elevated register) without supporting interpretable structure are classified as *degenerate*. 
