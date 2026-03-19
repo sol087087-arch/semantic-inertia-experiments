@@ -1,11 +1,21 @@
 #!/usr/bin/env python3
 """
-Semantic Inertia Stress Test — v2
-- 10-step protocol (trimmed from 15)
-- 3 baseline domains (literary / procedural / abstract)
-- reasoning disabled for all models via OpenRouter API
-- explicit empty system prompt to minimize provider injection
-- reasoning_tokens logged separately
+Pragmatic Anchor Deprivation Protocol — Experiment Runner v2
+
+Runs the PADP v4 protocol against models via OpenRouter API.
+Each run is a single multi-turn conversation: one baseline prompt
+followed by nine constraint-removal steps.
+
+Features:
+- 10-step protocol (3 baselines × 2 variants × N temperatures)
+- Reasoning disabled for all models
+- Explicit empty system prompt to minimize provider injection
+- Deterministic run IDs for reproducibility
+- Resume support via JSONL append
+
+Usage:
+  python run_experiment_v2.py --models models.json --protocols protocol/padp_v4.json
+  python run_experiment_v2.py --protocol overt --baselines literary --temps 0.7
 """
 from __future__ import annotations
 
@@ -22,7 +32,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 
-# ── helpers ────────────────────────────────────────────────────────────────────
+# ── Helpers ────────────────────────────────────────────────────────────────────
 
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -46,14 +56,9 @@ def build_model_id(entry: Dict[str, str]) -> str:
     return f"{entry['publisher'].strip()}/{entry['model'].strip()}"
 
 
-# ── protocol loading ──────────────────────────────────────────────────────────
+# ── Protocol loading ──────────────────────────────────────────────────────────
 
 def load_protocol_v2(path: str | Path) -> Tuple[Dict[str, Dict[str, str]], List[Dict[str, Any]]]:
-    """
-    Returns (baselines_dict, steps_list).
-    baselines_dict: {"literary": {"overt": "...", "natural": "..."}, ...}
-    steps_list: list of step dicts (step 1 has placeholder prompts).
-    """
     raw = load_json(path)
     baselines = raw["baselines"]
     steps = raw["steps"]
@@ -65,7 +70,6 @@ def inject_baseline(
     baseline_key: str,
     baselines: Dict[str, Dict[str, str]],
 ) -> List[Dict[str, Any]]:
-    """Replace step-1 placeholders with the chosen baseline prompts."""
     import copy
     out = copy.deepcopy(steps)
     bl = baselines[baseline_key]
@@ -76,7 +80,7 @@ def inject_baseline(
     return out
 
 
-# ── resume ────────────────────────────────────────────────────────────────────
+# ── Resume ────────────────────────────────────────────────────────────────────
 
 def normalize_temperature(temperature: float) -> str:
     return f"{temperature:.4f}"
@@ -134,8 +138,11 @@ def make_client() -> OpenAI:
     load_dotenv()
     api_key = os.getenv("OPENROUTER_API_KEY")
     if not api_key:
-        raise RuntimeError("OPENROUTER_API_KEY is not set")
+        raise RuntimeError("OPENROUTER_API_KEY is not set. Create a .env file.")
     return OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key)
+
+
+SYSTEM_PROMPT = ""  # explicit empty — minimizes provider-injected defaults
 
 
 def call_model(
@@ -154,9 +161,7 @@ def call_model(
         "messages": messages,
         "temperature": temperature,
         "max_tokens": max_tokens,
-        "extra_body": {
-            "reasoning": {"enabled": False},
-        },
+        "extra_body": {"reasoning": {"enabled": False}},
     }
     if timeout_s is not None:
         kwargs["timeout"] = timeout_s
@@ -176,7 +181,6 @@ def call_model(
                 time.sleep(retry_429_sleep)
                 continue
             raise
-    assert last_exc is not None
     raise last_exc
 
 
@@ -201,10 +205,7 @@ def extract_usage(response: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-# ── conversation logic ────────────────────────────────────────────────────────
-
-SYSTEM_PROMPT = ""  # explicit empty — minimizes provider-injected defaults
-
+# ── Conversation logic ────────────────────────────────────────────────────────
 
 def reconstruct_conversation(
     protocol_steps: List[Dict[str, Any]],
@@ -243,7 +244,6 @@ def run_single_conversation(
     run_id = deterministic_run_id(model_id, protocol_variant, baseline_key, temperature)
 
     existing = resume_index.get(ck, {"steps_done": set(), "assistant_text_by_step": {}})
-
     final_step = max(s["step"] for s in protocol_steps)
     if final_step in existing["steps_done"]:
         print(f"[SKIP] {model_id} | {protocol_variant} | {baseline_key} | t={temperature}")
@@ -267,20 +267,14 @@ def run_single_conversation(
 
         started_at = utc_now_iso()
         error_msg = None
-        raw_response = None
         text = ""
         usage = {}
 
         try:
             raw_response = call_model(
-                client=client,
-                model_id=model_id,
-                messages=conversation,
-                temperature=temperature,
-                max_tokens=step_max_tokens,
-                seed=seed,
-                timeout_s=timeout_s,
-                retry_429_sleep=retry_429_sleep,
+                client=client, model_id=model_id, messages=conversation,
+                temperature=temperature, max_tokens=step_max_tokens,
+                seed=seed, timeout_s=timeout_s, retry_429_sleep=retry_429_sleep,
             )
             text = extract_text(raw_response)
             usage = extract_usage(raw_response)
@@ -332,13 +326,11 @@ def run_single_conversation(
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Semantic Inertia v2")
-    p.add_argument("--models", default="models_v2.json")
-    p.add_argument("--protocols", default="pragmatic_collapse_protocols2.json")
-    p.add_argument(
-        "--output",
-        default=f"results/pragmatic_inertia_v3_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jsonl",
-    )
+    p = argparse.ArgumentParser(description="PADP v4 — Experiment Runner")
+    p.add_argument("--models", default="models.json")
+    p.add_argument("--protocols", default="protocol/padp_v4.json")
+    p.add_argument("--output", default=None,
+                   help="Output JSONL path (default: results/padp_<timestamp>.jsonl)")
     p.add_argument("--protocol", choices=["overt", "natural", "both"], default="both")
     p.add_argument("--baselines", nargs="+", default=["literary", "procedural", "abstract"])
     p.add_argument("--temps", type=float, nargs="+", default=[0.7, 0.1, 1.3])
@@ -352,25 +344,27 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    ensure_dir(Path(args.output).parent)
+
+    output_path = args.output or \
+        f"results/padp_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jsonl"
+    ensure_dir(Path(output_path).parent)
 
     models_raw = load_json(args.models)
     baselines_dict, protocol_steps = load_protocol_v2(args.protocols)
 
-    model_entries = models_raw[: args.limit_models] if args.limit_models else models_raw
+    model_entries = models_raw[:args.limit_models] if args.limit_models else models_raw
     model_ids = [(build_model_id(m), m.get("tier", "unknown")) for m in model_entries]
     protocol_variants = ["overt", "natural"] if args.protocol == "both" else [args.protocol]
     baseline_keys = [b for b in args.baselines if b in baselines_dict]
 
-    existing = load_existing_records(args.output)
+    existing = load_existing_records(output_path)
     resume_index = build_resume_index(existing)
 
     client = make_client()
-
     total_runs = len(model_ids) * len(protocol_variants) * len(baseline_keys) * len(args.temps)
 
     print("=" * 60)
-    print("  Semantic Inertia Stress Test — v2")
+    print("  PADP v4 — Experiment Runner")
     print("=" * 60)
     print(f"  Models:     {len(model_ids)}")
     print(f"  Variants:   {protocol_variants}")
@@ -380,9 +374,8 @@ def main() -> None:
     print(f"  Total runs: {total_runs}")
     print(f"  API calls:  ~{total_runs * len(protocol_steps)}")
     print(f"  Resume:     {len(existing)} existing records")
-    print(f"  Output:     {args.output}")
+    print(f"  Output:     {output_path}")
     print("=" * 60)
-    print()
 
     run_count = 0
     for model_id, model_tier in model_ids:
@@ -393,22 +386,16 @@ def main() -> None:
                     run_count += 1
                     print(f"\n── Run {run_count}/{total_runs} ──")
                     run_single_conversation(
-                        client=client,
-                        model_id=model_id,
-                        model_tier=model_tier,
-                        protocol_steps=steps,
-                        protocol_variant=variant,
-                        baseline_key=baseline_key,
-                        temperature=temp,
-                        results_path=args.output,
-                        sleep_s=args.sleep,
-                        seed=args.seed,
-                        timeout_s=args.timeout,
+                        client=client, model_id=model_id, model_tier=model_tier,
+                        protocol_steps=steps, protocol_variant=variant,
+                        baseline_key=baseline_key, temperature=temp,
+                        results_path=output_path, sleep_s=args.sleep,
+                        seed=args.seed, timeout_s=args.timeout,
                         retry_429_sleep=args.retry_429_sleep,
                         resume_index=resume_index,
                     )
 
-    print(f"\nDone. {args.output}")
+    print(f"\nDone. {output_path}")
 
 
 if __name__ == "__main__":
